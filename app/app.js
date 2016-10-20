@@ -1,7 +1,7 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('primetimeApp', [
+let app = angular.module('primetimeApp', [
   'ngRoute',
   'primetimeApp.view1',
   'primetimeApp.view2',

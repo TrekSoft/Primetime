@@ -1,3 +1,24 @@
-<p>This is the partial for view 1.</p>
+<div ng-show="status===null">
+    Loading...
+</div>
 
-<button ng-click="login()">Continue with Facebook</button>
+<div ng-show="status===false">
+    <h2>Welcome to Primetime</h2>
+
+    <button ng-click="login()">Continue with Facebook</button>
+</div>
+
+<div ng-show="status===true && chosenPage===null">
+    <div ng-repeat="page in pages">
+        <h3>{{page.name}}</h3>
+        <i>{{page.category}}</i>
+        <button ng-click="selectPage(page)">
+            <span ng-if="!loadingPage">Manage</span>
+            <span ng-if="loadingPage">Loading...</span>
+        </button>
+    </div>
+</div>
+
+<div ng-show="chosenPage">
+
+</div>
