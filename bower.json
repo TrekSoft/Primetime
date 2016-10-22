@@ -1,16 +1,14 @@
 {
   "name": "primetime",
   "description": "Launch your Facebook posts at the perfect moment",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "homepage": "https://github.com/TrekSoft/Primetime",
   "private": true,
   "dependencies": {
     "angular": "~1.5.0",
     "angular-route": "~1.5.0",
-    "angular-loader": "~1.5.0",
-    "angular-mocks": "~1.5.0",
-    "html5-boilerplate": "^5.3.0",
     "ng-facebook": "^0.1.6",
-    "moment": "^2.15.1"
+    "moment": "^2.15.1",
+    "angular-material": "^1.1.1"
   }
 }

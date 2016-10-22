@@ -4,12 +4,13 @@ app.factory('Page', ['$q', '$facebook', 'Post', function($q, $facebook, Post) {
             this.setData(data);
         }
     };
+
     Page.prototype = {
         setData: function(data) {
             angular.extend(this, data);
         },
 
-        getFans: function() {
+        getFanData: function() {
             let deferred = $q.defer();
 
             if(!this.fanData) {
@@ -40,28 +41,26 @@ app.factory('Page', ['$q', '$facebook', 'Post', function($q, $facebook, Post) {
         getPosts: function() {
             let deferred = $q.defer();
 
-            if(!this.posts) {
-                this.posts = [];
-                let self = this;
+            this.posts = [];
+            let self = this;
 
-                $facebook.api('/'+this.id+'/posts?fields=object_id,message,is_published,created_time,type').then(
-                    function(response) {
-                        response.data.forEach(
-                            function(post){
-                                self.posts.push(new Post(post));
-                            }
-                        );
+            $facebook.api('/'+this.id+'/posts?fields=object_id,message,is_published,created_time,type').then(
+                function(response) {
+                    response.data.forEach(
+                        function(post){
+                            let p = new Post(post);
+                            p.getViews();
+                            self.posts.push(p);
+                        }
+                    );
 
-                        deferred.resolve(self.posts);
-                    }
-                );
-            }
-            else {
-                deferred.resolve(this.posts);
-            }
+                    deferred.resolve(self.posts);
+                }
+            );
 
             return deferred.promise;
         }
     };
+
     return Page;
 }]);

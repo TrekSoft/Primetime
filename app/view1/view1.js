@@ -9,43 +9,40 @@ angular.module('primetimeApp.view1', ['ngRoute'])
   });
 }])
 
-.controller('View1Ctrl', ['$scope', '$facebook', 'Page', function($scope, $facebook, Page) {
+.controller('View1Ctrl', ['$scope', '$facebook', 'User', 'Page', function($scope, $facebook, User, Page) {
     $scope.status = null;
+    $scope.user = null;
     $scope.pages = [];
     $scope.chosenPage = null;
-    $scope.loadingPage = false;
+    $scope.posts = null;
+    $scope.fanData = null;
 
     $scope.login = function() {
         $facebook.login();
     };
 
     $scope.selectPage = function(page) {
-        $scope.loadingPage = true;
+        $scope.chosenPage = page;
 
         page.getPosts().then(function(response) {
-            console.log(response);
+            $scope.posts = response;
         });
 
-        page.getFans().then(function(response) {
-            $scope.chosenPage = page;
-            $scope.loadingPage = false;
-            console.log(response);
-            // 418754271481410/posts?fields=object_id,message,is_published,created_time,type
+        page.getFanData().then(function(response) {
+            $scope.fanData = response;
         });
-
     }
 
     $scope.$on('fb.auth.authResponseChange', function() {
       $scope.status = $facebook.isConnected();
 
       if($scope.status) {
-          $facebook.api('/me/accounts').then(function(response) {
-              response.data.forEach(function(p){
-                  $scope.pages.push(new Page(p));
-              });
-
-              console.log($scope.pages);
-          });
+          $scope.user = new User();
+          $scope.user.load().then(
+              function(){
+                  $scope.user.getPages();
+              }
+          );
       }
     });
 }]);

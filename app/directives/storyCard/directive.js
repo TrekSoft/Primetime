@@ -2,8 +2,8 @@ app.directive('storyCard', function() {
     return {
         restrict: 'E',
         scope: {
-            data: '='
+            post: '='
         },
-        templateUrl: 'templates/book-widget.html'
-    }
-})
+        templateUrl: 'directives/storyCard/template.html'
+    };
+});

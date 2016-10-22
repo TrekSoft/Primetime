@@ -1,7 +1,7 @@
 {
   "name": "primetime",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Launch your Facebook posts at the perfect moment",
   "repository": "https://github.com/TrekSoft/Primetime",
   "devDependencies": {

@@ -9,16 +9,21 @@
 </div>
 
 <div ng-show="status===true && chosenPage===null">
-    <div ng-repeat="page in pages">
+    <div ng-if="!user.pages">
+        Loading pages...
+    </div>
+
+    <div ng-if="user.pages && user.pages.length == 0">
+        No pages
+    </div>
+
+    <div ng-if="user.pages && user.pages.length > 0" ng-repeat="page in user.pages">
         <h3>{{page.name}}</h3>
         <i>{{page.category}}</i>
-        <button ng-click="selectPage(page)">
-            <span ng-if="!loadingPage">Manage</span>
-            <span ng-if="loadingPage">Loading...</span>
-        </button>
+        <button ng-click="selectPage(page)">Manage</button>
     </div>
 </div>
 
-<div ng-show="chosenPage">
-
+<div ng-if="chosenPage">
+    <story-card ng-if="chosenPage.posts" post="post" ng-repeat="post in chosenPage.posts"></story-card>
 </div>
