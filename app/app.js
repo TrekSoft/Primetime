@@ -9,20 +9,17 @@ config([
     '$routeProvider',
     '$facebookProvider',
     '$mdThemingProvider',
+    'FB_CONFIG',
 
     function(
         $routeProvider,
         $facebookProvider,
-        $mdThemingProvider
+        $mdThemingProvider,
+        FB_CONFIG
     ) {
         $routeProvider.otherwise({redirectTo: '/view1'});
 
-        $facebookProvider.setAppId('342239076111236').setPermissions([
-            'manage_pages',
-            'publish_pages',
-            'read_insights',
-            'read_audience_network_insights'
-        ]).setVersion("v2.8");
+        $facebookProvider.setAppId(FB_CONFIG.APP_ID).setPermissions(FB_CONFIG.PERMISSIONS).setVersion(FB_CONFIG.VERSION);
 
         $mdThemingProvider.theme('default')
             .primaryPalette('pink', { 'default': '800', 'hue-1': '100', 'hue-2': '600', 'hue-3': 'A100' })

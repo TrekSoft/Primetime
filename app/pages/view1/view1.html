@@ -1,0 +1,51 @@
+<div ng-show="status===null">
+    Loading...
+</div>
+
+<div ng-show="status===false">
+    <h2>Welcome to Primetime</h2>
+
+    <md-button ng-click="login()" class="md-raised md-primary">Continue with Facebook</md-button>
+</div>
+
+<div ng-show="status===true && currentPage===null">
+    <div ng-if="!user.pages">
+        Loading pages...
+    </div>
+
+    <div ng-if="user.pages && user.pages.length == 0">
+        No pages
+    </div>
+
+    <div ng-if="user.pages && user.pages.length > 0" ng-repeat="page in user.pages">
+        <h3>{{page.name}}</h3>
+        <i>{{page.category}}</i>
+        <md-button ng-click="selectPage(page)">Manage</md-button>
+    </div>
+</div>
+
+<div ng-if="currentPage">
+    <form>
+        <md-input-container class="md-block">
+          <label>New Post</label>
+          <textarea ng-model="newPost.message" rows="5" md-select-on-focus></textarea>
+        </md-input-container>
+
+        <md-button ng-click="post()" class="md-raised md-secondary">Post</md-button>
+        <md-button ng-click="schedule()" class="md-raised md-secondary">Schedule</md-button>
+        <md-datepicker
+            ng-model="newPost.date"
+            ng-change="setHourOptions()"
+            md-min-date="minScheduledDate"
+            md-max-date="maxScheduledDate"
+            md-placeholder="Date"
+            md-open-on-focus></md-datepicker>
+        <md-input-container>
+            <md-select ng-model="newPost.time" placeholder="Time">
+                <md-option value="{{hour.val}}" ng-repeat="hour in hours">{{hour.display}}</md-option>
+            </md-select>
+        </md-input-container>
+    </form>
+
+    <story-card ng-if="currentPage.posts" post="post" ng-repeat="post in currentPage.posts"></story-card>
+</div>

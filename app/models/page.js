@@ -16,17 +16,21 @@ app.factory('Page', ['$q', '$facebook', 'Post', function($q, $facebook, Post) {
             if(!this.fanData) {
                 let oneWeekAgo = moment().startOf('day').subtract(7, 'days').unix();
                 let self = this;
-                this.fanData = {};
+                this.fanData = [];
 
                 $facebook.api('/'+this.id+'/insights/page_fans_online?since='+oneWeekAgo).then(
                     function(response) {
                         response.data[0].values.forEach(
                             function(metric) {
-                                let startDate = moment(metric.end_time).subtract(1, 'days');
-                                self.fanData[startDate.unix()] = metric.value;
+                                let startDate = moment(metric.end_time).subtract(1, 'days').add(1, 'minute');
+                                self.fanData[startDate.day()] = metric.value;
+
+                                console.log(startDate);
+                                console.log(startDate.day());
                             }
                         );
 
+                        console.log(self.fanData);
                         deferred.resolve(self.fanData);
                     }
                 );
@@ -59,6 +63,20 @@ app.factory('Page', ['$q', '$facebook', 'Post', function($q, $facebook, Post) {
             );
 
             return deferred.promise;
+        },
+
+        publishPost: function(message, scheduleTime) {
+            let post = {
+                'access_token': this.access_token,
+                'message': message
+            };
+
+            if(scheduleTime) {
+                post.published = false;
+                post.scheduled_publish_time = scheduleTime;
+            }
+
+            return $facebook.api('/'+this.id+'/feed', 'POST', post);
         }
     };
 
