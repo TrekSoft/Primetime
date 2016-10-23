@@ -14,23 +14,31 @@ app.factory('Page', ['$q', '$facebook', 'Post', function($q, $facebook, Post) {
             let deferred = $q.defer();
 
             if(!this.fanData) {
-                let oneWeekAgo = moment().startOf('day').subtract(7, 'days').unix();
+                let oneWeekAgo = moment().subtract(8, 'days').toString('YYYY-MM-DD');
+                let yesterday = moment().subtract(1, 'days').toString('YYYY-MM-DD');
                 let self = this;
                 this.fanData = [];
+                this.maxFansOnline = 0;
 
-                $facebook.api('/'+this.id+'/insights/page_fans_online?since='+oneWeekAgo).then(
+                $facebook.api('/'+this.id+'/insights/page_fans_online?since='+oneWeekAgo+'&until='+yesterday).then(
                     function(response) {
                         response.data[0].values.forEach(
                             function(metric) {
-                                let startDate = moment(metric.end_time).subtract(1, 'days').add(1, 'minute');
-                                self.fanData[startDate.day()] = metric.value;
+                                let startDate = moment(metric.end_time).subtract(1, 'days');
 
-                                console.log(startDate);
-                                console.log(startDate.day());
+                                if(!metric.value) {
+                                    delete self.fanData;
+                                    delete self.maxFansOnline;
+                                    return;
+                                }
+
+                                let fanDataArray = Object.keys(metric.value).map(key => Number(metric.value[key]));
+
+                                self.fanData[startDate.day()] = fanDataArray;
+                                self.maxFansOnline = Math.max(self.maxFansOnline, Math.max(...fanDataArray));
                             }
                         );
 
-                        console.log(self.fanData);
                         deferred.resolve(self.fanData);
                     }
                 );
@@ -48,19 +56,32 @@ app.factory('Page', ['$q', '$facebook', 'Post', function($q, $facebook, Post) {
             this.posts = [];
             let self = this;
 
-            $facebook.api('/'+this.id+'/posts?fields=object_id,message,is_published,created_time,type').then(
-                function(response) {
-                    response.data.forEach(
-                        function(post){
-                            let p = new Post(post);
-                            p.getViews();
-                            self.posts.push(p);
-                        }
-                    );
+            $facebook.api(
+                '/'+
+                self.id+
+                '/posts?fields=object_id,message,is_published,created_time,type'
+            ).then(function(response) {
+                addPosts(response);
 
+                $facebook.api(
+                    '/'+
+                    self.id+
+                    '/promotable_posts?is_published=false&fields=object_id,message,is_published,created_time,type,scheduled_publish_time'
+                ).then(function(response) {
+                    addPosts(response);
                     deferred.resolve(self.posts);
-                }
-            );
+                });
+            });
+
+            function addPosts(response) {
+                response.data.forEach(
+                    function(post){
+                        let p = new Post(post);
+                        p.getViews();
+                        self.posts.push(p);
+                    }
+                );
+            }
 
             return deferred.promise;
         },

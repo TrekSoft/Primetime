@@ -23,7 +23,7 @@ config([
 
         $mdThemingProvider.theme('default')
             .primaryPalette('pink', { 'default': '800', 'hue-1': '100', 'hue-2': '600', 'hue-3': 'A100' })
-            .accentPalette('cyan', { 'default': 'A700' });
+            .accentPalette('green', { 'default': 'A700' });
     }
 ])
 .run([

@@ -31,21 +31,35 @@
           <textarea ng-model="newPost.message" rows="5" md-select-on-focus></textarea>
         </md-input-container>
 
-        <md-button ng-click="post()" class="md-raised md-secondary">Post</md-button>
-        <md-button ng-click="schedule()" class="md-raised md-secondary">Schedule</md-button>
+        <md-button ng-click="post()" class="md-raised">Post</md-button>
+        <md-button ng-click="schedule()" class="md-raised">Schedule</md-button>
         <md-datepicker
             ng-model="newPost.date"
-            ng-change="setHourOptions()"
+            ng-change="dateChanged()"
             md-min-date="minScheduledDate"
             md-max-date="maxScheduledDate"
             md-placeholder="Date"
             md-open-on-focus></md-datepicker>
         <md-input-container>
-            <md-select ng-model="newPost.time" placeholder="Time">
-                <md-option value="{{hour.val}}" ng-repeat="hour in hours">{{hour.display}}</md-option>
+            <md-select ng-model="newPost.time" md-placeholder="Time" aria-label="Time Selector">
+                <md-option ng-value="hour" ng-repeat="hour in hours">{{hour.display}}</md-option>
             </md-select>
         </md-input-container>
+
+        <span
+            class="md-accent"
+            ng-if="maxFansToday && newPost.time && (maxFansToday.fansOnline - newPost.time.fansOnline) > 0"
+        >
+            You would have {{maxFansToday.fansOnline - newPost.time.fansOnline}} more fans online
+            if you scheduled your post for {{maxFansToday.display}} today!
+        </span>
+
+        <md-progress-linear ng-if="currentPage.maxFansOnline" class="md-accent" md-mode="determinate" value="{{(newPost.time.fansOnline / currentPage.maxFansOnline) * 100}}"></md-progress-linear>
     </form>
 
-    <story-card ng-if="currentPage.posts" post="post" ng-repeat="post in currentPage.posts"></story-card>
+    <h2>Unpublished Posts:</h2>
+    <story-card ng-if="currentPage.posts" post="post" ng-repeat="post in currentPage.posts | filter: {is_published: false}"></story-card>
+
+    <h2>Published Posts:</h2>
+    <story-card ng-if="currentPage.posts" post="post" ng-repeat="post in currentPage.posts | filter: {is_published: true}"></story-card>
 </div>

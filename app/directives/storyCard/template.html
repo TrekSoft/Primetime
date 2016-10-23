@@ -1,4 +1,6 @@
 <directive>
     Message: {{post.message}}<BR>
-    <span ng-if="post.views">Views: {{post.views}}</span><BR><BR>
+    <span ng-if="post.views">Views: {{post.views}}<BR></span>
+    <span ng-if="post.created_time">Created at: {{post.created_time}}<BR></span>
+    <span ng-if="post.scheduled_publish_time">Scheduled Publish Time: {{post.scheduled_publish_time}}</span><BR><BR>
 </directive>

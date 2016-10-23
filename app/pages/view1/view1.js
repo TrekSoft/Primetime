@@ -16,10 +16,12 @@ angular.module('primetimeApp.view1', ['ngRoute'])
     $scope.currentPage = null;
     $scope.posts = null;
     $scope.fanData = null;
-    $scope.newPost = {};
-    $scope.minScheduledDate = moment().toDate();
+    $scope.minScheduledDate = moment().startOf('day').toDate();
     $scope.maxScheduledDate = moment().add(6, 'months').toDate();
     $scope.hours = null;
+    $scope.pstDiff = -7 - moment().utcOffset()/60;
+    $scope.maxFansToday = {};
+    $scope.newPost = null;
 
     $scope.login = function() {
         $facebook.login();
@@ -34,6 +36,13 @@ angular.module('primetimeApp.view1', ['ngRoute'])
 
         page.getFanData().then(function(response) {
             $scope.fanData = response;
+
+            $scope.newPost = {
+                message: "",
+                date: moment().startOf('day').toDate()
+            };
+
+            setHourOptions();
         });
     };
 
@@ -42,7 +51,8 @@ angular.module('primetimeApp.view1', ['ngRoute'])
     };
 
     $scope.schedule = function() {
-        $scope.currentPage.publishPost($scope.newPost.message, moment($scope.newPost.date).unix()).then($scope.publishSuccess);
+        let scheduleTime = moment($scope.newPost.date).add($scope.newPost.time.val, 'hours').unix();
+        $scope.currentPage.publishPost($scope.newPost.message, scheduleTime).then($scope.publishSuccess);
     };
 
     $scope.publishSuccess = function(response) {
@@ -50,12 +60,17 @@ angular.module('primetimeApp.view1', ['ngRoute'])
         $scope.currentPage.getPosts();
     };
 
-    $scope.setHourOptions = function() {
+    $scope.dateChanged = function() {
+        setHourOptions();
+    }
+
+    function setHourOptions() {
         $scope.hours = [];
         $scope.newPost.time = null;
         let hour = 0;
+        let maxFans = -1;
 
-        if(moment($scope.newPost.date).day() == moment().day()) {
+        if(moment($scope.newPost.date).isSame(moment().startOf('day'))) {
             // Add 11 minutes to the current time because Facebook scheduled posts
             // have to be at least 11 minutes in the future. Then get the next hour.
             hour = moment().add(11, 'minutes').add(1, 'hour').hour();
@@ -75,16 +90,37 @@ angular.module('primetimeApp.view1', ['ngRoute'])
                 display = hour + display;
             }
 
-            $scope.hours.push(
-                {
-                    'val': hour,
-                    'display': display
-                }
-            );
+            let fans = fansOnlineAt(hour);
+            let hourObject = {
+                'val': hour,
+                'display': display,
+                'fansOnline': fans
+            };
+
+            if(fans > maxFans) {
+                $scope.maxFansToday = hourObject;
+                maxFans = fans;
+            }
+
+            $scope.hours.push(hourObject);
 
             hour++;
         }
+
+        $scope.newPost.time = $scope.hours[0];
     };
+
+    function fansOnlineAt(hour) {
+        let timeDiff = $scope.pstDiff;
+
+        if(hour == null || !$scope.currentPage.fanData) {
+            return null;
+        }
+        else {
+            let date = moment($scope.newPost.date).add(hour, 'hours').add(timeDiff, 'hours');
+            return $scope.currentPage.fanData[date.day()][(hour + timeDiff).mod(24)];
+        }
+    }
 
     $scope.$on('fb.auth.authResponseChange', function() {
       $scope.status = $facebook.isConnected();
@@ -98,6 +134,11 @@ angular.module('primetimeApp.view1', ['ngRoute'])
           );
       }
     });
+
+    // Fixes the Javascript negative number bug
+    Number.prototype.mod = function(n) {
+        return ((this%n)+n)%n;
+    };
 }]);
 
 
