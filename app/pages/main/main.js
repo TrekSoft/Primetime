@@ -1,15 +1,16 @@
 'use strict';
 
-angular.module('primetimeApp.view1', ['ngRoute'])
+angular.module('primetimeApp.main', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/view1', {
-    templateUrl: 'pages/view1/view1.html',
-    controller: 'View1Ctrl'
+  $routeProvider.when('/main', {
+    templateUrl: 'pages/main/main.html',
+    css: 'pages/main/main.css',
+    controller: 'MainCtrl'
   });
 }])
 
-.controller('View1Ctrl', ['$scope', '$facebook', 'User', 'Page', function($scope, $facebook, User, Page) {
+.controller('MainCtrl', ['$scope', '$facebook', 'User', 'Page', function($scope, $facebook, User, Page) {
     $scope.status = null;
     $scope.user = null;
     $scope.pages = [];
@@ -36,13 +37,7 @@ angular.module('primetimeApp.view1', ['ngRoute'])
 
         page.getFanData().then(function(response) {
             $scope.fanData = response;
-
-            $scope.newPost = {
-                message: "",
-                date: moment().startOf('day').toDate()
-            };
-
-            setHourOptions();
+            resetNewPost();
         });
     };
 
@@ -56,7 +51,7 @@ angular.module('primetimeApp.view1', ['ngRoute'])
     };
 
     $scope.publishSuccess = function(response) {
-        $scope.newPost = {};
+        resetNewPost();
         $scope.currentPage.getPosts();
     };
 
@@ -122,6 +117,15 @@ angular.module('primetimeApp.view1', ['ngRoute'])
         }
     }
 
+    function resetNewPost() {
+        $scope.newPost = {
+            message: "",
+            date: moment().startOf('day').toDate()
+        };
+
+        setHourOptions();
+    }
+
     $scope.$on('fb.auth.authResponseChange', function() {
       $scope.status = $facebook.isConnected();
 
@@ -140,12 +144,3 @@ angular.module('primetimeApp.view1', ['ngRoute'])
         return ((this%n)+n)%n;
     };
 }]);
-
-
-/*
-$facebook.api('/418754271481410?fields=access_token').then(function(user) {
-    $facebook.api('/418754271481410/insights/page_fans_online').then(function(user) {
-        console.log(user);
-    });
-});
-*/

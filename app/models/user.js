@@ -32,7 +32,9 @@ app.factory('User', ['$q', '$facebook', 'Page', function($q, $facebook, Page) {
             $facebook.api('/me/accounts').then(
                 function(response) {
                     response.data.forEach(function(p){
-                        self.pages.push(new Page(p));
+                        let page = new Page(p);
+                        page.getProfilePic();
+                        self.pages.push(page);
                     });
 
                     deferred.resolve(self.pages);

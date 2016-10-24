@@ -1,0 +1,81 @@
+<md-toolbar ng-if="user">
+    <div class="md-toolbar-tools">{{user.name}}</div>
+</md-toolbar>
+
+<div class="login" ng-show="!user || !user.pages">
+    <h1>Welcome to Primetime</h1>
+    <div class="subheading">Launch your posts at the perfect moment</div>
+
+    <md-button ng-click="login()" class="md-raised md-accent">Continue with Facebook</md-button>
+</div>
+
+<div class="pages" ng-show="user.pages && !currentPage">
+    <div ng-if="user.pages && user.pages.length == 0">
+        No pages
+    </div>
+
+    <md-card ng-if="user.pages" class="page-card" ng-repeat="page in user.pages">
+        <md-card-title>
+          <md-card-title-text>
+            <span class="md-headline">{{page.name}}</span>
+            <span class="md-subhead">{{page.category}}</span>
+          </md-card-title-text>
+          <md-card-title-media>
+            <div class="md-media-md card-media">
+                <img ng-src="{{page.profilePic}}">
+            </div>
+          </md-card-title-media>
+        </md-card-title>
+        <md-card-actions layout="row" layout-align="end center">
+          <md-button ng-click="selectPage(page)">Manage</md-button>
+        </md-card-actions>
+      </md-card>
+</div>
+
+<div class="posts" ng-if="currentPage">
+    <div class="inner">
+        <form>
+            <md-input-container class="md-block new-post">
+              <label>New Post</label>
+              <textarea ng-model="newPost.message" rows="3" md-select-on-focus></textarea>
+            </md-input-container>
+
+            <md-datepicker
+                ng-model="newPost.date"
+                ng-change="dateChanged()"
+                md-min-date="minScheduledDate"
+                md-max-date="maxScheduledDate"
+                md-placeholder="Date"
+                class="date-picker"
+                md-open-on-focus></md-datepicker>
+            <md-input-container class="time-picker">
+                <md-select ng-model="newPost.time" md-placeholder="Time" aria-label="Time Selector">
+                    <md-option ng-value="hour" ng-repeat="hour in hours">{{hour.display}}</md-option>
+                </md-select>
+            </md-input-container>
+            <md-button ng-click="schedule()" class="md-raised schedule-button">Schedule</md-button>
+            <md-button ng-click="post()" class="md-raised">Post Now</md-button>
+
+            <div
+                class="alert"
+                ng-if="maxFansToday && newPost.time && (maxFansToday.fansOnline - newPost.time.fansOnline) > 0"
+            >
+                You will have {{maxFansToday.fansOnline - newPost.time.fansOnline}} more fans online
+                if you schedule this for {{maxFansToday.display}} today!
+            </div>
+
+            <md-progress-linear
+                ng-if="currentPage.maxFansOnline"
+                class="md-accent fan-bar"
+                md-mode="determinate"
+                value="{{(newPost.time.fansOnline / currentPage.maxFansOnline) * 100}}">
+            </md-progress-linear>
+        </form>
+
+        <h2>Unpublished Posts:</h2>
+        <story-card ng-if="currentPage.posts" page="currentPage" post="post" ng-repeat="post in currentPage.posts | filter: {is_published: false}"></story-card>
+
+        <h2>Published Posts:</h2>
+        <story-card ng-if="currentPage.posts" page="currentPage" post="post" ng-repeat="post in currentPage.posts | filter: {is_published: true}"></story-card>
+    </div>
+</div>

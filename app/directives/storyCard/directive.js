@@ -2,8 +2,10 @@ app.directive('storyCard', function() {
     return {
         restrict: 'E',
         scope: {
-            post: '='
+            post: '=',
+            page: '='
         },
-        templateUrl: 'directives/storyCard/template.html'
+        templateUrl: 'directives/storyCard/template.html',
+        controller: 'StoryCardCtrl'
     };
 });

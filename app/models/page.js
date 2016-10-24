@@ -10,6 +10,20 @@ app.factory('Page', ['$q', '$facebook', 'Post', function($q, $facebook, Post) {
             angular.extend(this, data);
         },
 
+        getProfilePic: function() {
+            let deferred = $q.defer();
+            let self = this;
+
+            $facebook.api('/'+this.id+'/picture').then(
+                function(response) {
+                    self.profilePic = response.data.url;
+                    deferred.resolve(self.profilePic);
+                }
+            );
+
+            return deferred.promise;
+        },
+
         getFanData: function() {
             let deferred = $q.defer();
 

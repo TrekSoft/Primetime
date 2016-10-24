@@ -7,15 +7,14 @@
         <meta name="description" content="Launch your Facebook posts at just the right moment">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        <link rel="stylesheet" href="app.css"/>
         <link rel="stylesheet" href="bower_components/angular-material/angular-material.css"/>
     </head>
 
-    <body>
+    <body ng-view>
         <!--[if lt IE 7]>
           <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-
-        <div ng-view></div>
 
         <script src="bower_components/angular/angular.js"></script>
         <script src="bower_components/angular-animate/angular-animate.js"></script>
@@ -27,12 +26,12 @@
         <script src="bower_components/ng-facebook/ngFacebook.js"></script>
 
         <script src="app.js"></script>
-        <script src="pages/view1/view1.js"></script>
-        <script src="pages/view2/view2.js"></script>
+        <script src="pages/main/main.js"></script>
         <script src="models/page.js"></script>
         <script src="models/post.js"></script>
         <script src="models/user.js"></script>
         <script src="directives/storyCard/directive.js"></script>
+        <script src="directives/storyCard/controller.js"></script>
         <script src="constants/fbconfig.js"></script>
     </body>
 </html>
